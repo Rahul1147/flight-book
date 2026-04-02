@@ -56,24 +56,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  const isAdmin = role === 'ADMIN';
   const isAirportManager = role === 'AIRPORT_MANAGER';
 
-  if (isAdminPath && !isAirportManager) {
+  if (isAdminPath && !isAdmin) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const userUrl = request.nextUrl.clone();
-    userUrl.pathname = '/dashboard/user';
+    userUrl.pathname = isAirportManager ? '/dashboard/airport' : '/dashboard/user';
     userUrl.search = '';
     return NextResponse.redirect(userUrl);
   }
 
   if (isUserPath && isAirportManager) {
-    const adminUrl = request.nextUrl.clone();
-    adminUrl.pathname = '/dashboard/admin';
-    adminUrl.search = '';
-    return NextResponse.redirect(adminUrl);
+    return NextResponse.next();
   }
 
   return NextResponse.next();

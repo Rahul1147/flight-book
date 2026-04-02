@@ -31,7 +31,8 @@ export default async function RedirectPage({ searchParams }: RedirectPageProps) 
   });
 
   const role = user?.role || 'USER';
-  const isAdmin = role === 'AIRPORT_MANAGER';
+  const isAdmin = role === 'ADMIN';
+  const isAirportManager = role === 'AIRPORT_MANAGER';
 
   if (target === 'admin') {
     if (isAdmin) {
@@ -39,12 +40,18 @@ export default async function RedirectPage({ searchParams }: RedirectPageProps) 
       if (from?.startsWith('/api/admin')) redirect('/dashboard/admin');
       redirect('/dashboard/admin');
     }
+    if (isAirportManager) {
+      redirect('/dashboard/airport');
+    }
     redirect('/dashboard/user');
   }
 
   if (target === 'user') {
     if (isAdmin) {
       redirect('/dashboard/admin');
+    }
+    if (isAirportManager) {
+      redirect('/dashboard/airport');
     }
     if (from?.startsWith('/dashboard/user') || from?.startsWith('/flights') || from?.startsWith('/bookings')) {
       redirect(from);
@@ -54,6 +61,10 @@ export default async function RedirectPage({ searchParams }: RedirectPageProps) 
 
   if (isAdmin) {
     redirect('/dashboard/admin');
+  }
+
+  if (isAirportManager) {
+    redirect('/dashboard/airport');
   }
 
   redirect('/dashboard/user');

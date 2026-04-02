@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
-import WelcomeSection from '@/components/WelcomeSection';
 
 const prisma = new PrismaClient();
 
@@ -20,11 +19,24 @@ export default async function DashboardPage() {
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'AIRPORT_MANAGER';
+  const role = user?.role;
 
+  if (role === 'ADMIN') {
+    redirect('/dashboard/admin');
+  }
+
+  if (role === 'AIRPORT_MANAGER') {
+    redirect('/dashboard/airport');
+  }
+
+  if (role === 'USER' || !role) {
+    redirect('/dashboard/user');
+  }
+
+  // Fallback in case of an unexpected role or no role
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800 flex items-center justify-center">
-      <WelcomeSection isAdmin={isAdmin} />
+      <p>Redirecting...</p>
     </main>
   );
 }

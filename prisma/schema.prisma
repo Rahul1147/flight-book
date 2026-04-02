@@ -26,6 +26,7 @@ model User {
   emailVerified Boolean
   image         String?
   role          UserRole     @default(USER)
+  managedAirportId String?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]

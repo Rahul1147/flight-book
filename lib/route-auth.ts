@@ -18,4 +18,4 @@ export const getSessionAndRole = async (request: Request) => {
   return { session, role: user?.role ?? null };
 };
 
-export const isAdminRole = (role: UserRole | null) => role === 'AIRPORT_MANAGER';
+export const isAdminRole = (role: UserRole | null) => role === 'ADMIN';
