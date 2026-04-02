@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Geist } from "next/font/google";
+import { Geist, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const heading = Geist({ subsets: ["latin"], variable: "--font-heading" });
 
-const inter = Inter({ subsets: ["latin"] });
+const body = Manrope({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Flight-booker | Automated Outreach",
-  description: "Generate hyper-personalized sales emails with AI",
+  title: "Flight Booker",
+  description: "Professional flight booking platform for users, airport managers, and admins.",
 };
 
 export default function RootLayout({
@@ -19,11 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className={inter.className}>
+    <html lang="en" className={cn(heading.variable, body.variable)}>
+      <body className={cn(body.className, "font-sans")}>
         <Navbar />
-        <main className="min-h-screen bg-gray-50">
-          {children}
+        <main className="min-h-[calc(100dvh-4.5rem)] px-4 pb-10 pt-6 sm:px-6 lg:px-8 lg:pt-8">
+          <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
       </body>
     </html>

@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -35,8 +33,10 @@ export default async function DashboardPage() {
 
   // Fallback in case of an unexpected role or no role
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-800 flex items-center justify-center">
-      <p>Redirecting...</p>
+    <main className="grid min-h-[calc(100dvh-9rem)] place-items-center">
+      <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-600 shadow-sm">
+        Redirecting to your dashboard...
+      </div>
     </main>
   );
 }

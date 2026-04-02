@@ -69,20 +69,20 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
     airlineLabels.find((item) => normalize(item.label) === normalize(airlineQuery))?.id ?? '';
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-50 via-white to-cyan-50 p-6 shadow-sm sm:p-8">
+    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-linear-to-br from-white via-sky-50/70 to-cyan-50/70 p-6 shadow-sm sm:p-8">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Discover</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             Book The Right Flight Faster
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
             Autocomplete airports and airlines, filter by date and budget, then find your next trip in seconds.
           </p>
         </div>
         <Link
           href="/dashboard/user"
-          className="rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-sm text-slate-700 hover:bg-white"
+          className="rounded-xl border border-slate-200 bg-white/85 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-white"
         >
           Back to Dashboard
         </Link>
@@ -100,7 +100,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
             value={sourceQuery}
             onChange={(event) => setSourceQuery(event.target.value)}
             placeholder="Start typing airport"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+            className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
           />
           <datalist id="source-airport-options">
             {airportLabels.map((airport) => (
@@ -116,7 +116,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
             value={destinationQuery}
             onChange={(event) => setDestinationQuery(event.target.value)}
             placeholder="Start typing airport"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+            className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
           />
           <datalist id="destination-airport-options">
             {airportLabels.map((airport) => (
@@ -131,7 +131,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
             type="date"
             name="date"
             defaultValue={values.date}
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+            className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
           />
         </label>
 
@@ -142,7 +142,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
             value={airlineQuery}
             onChange={(event) => setAirlineQuery(event.target.value)}
             placeholder="Any airline"
-            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+            className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
           />
           <datalist id="airline-options">
             {airlineLabels.map((airline) => (
@@ -161,7 +161,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
               step="1"
               defaultValue={values.minPrice}
               placeholder="0"
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+              className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
             />
           </label>
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
@@ -173,7 +173,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
               step="1"
               defaultValue={values.maxPrice}
               placeholder="1500"
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-sky-500"
+              className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm shadow-sm outline-none transition focus:border-sky-500"
             />
           </label>
         </div>
@@ -181,7 +181,7 @@ export default function FlightHeroSearch({ airports, airlines, values }: FlightH
         <div className="flex items-end gap-2 md:col-span-2 xl:col-span-1">
           <button
             type="submit"
-            className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700"
+            className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-700"
           >
             Search Flights
           </button>

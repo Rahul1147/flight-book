@@ -1,13 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-
 // ─── Config ──────────────────────────────────────────────
 const TOTAL_ROWS = 30;
 const COLUMNS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const BUSINESS_ROWS = 5; // Rows 1-5 are Business Class
 const BUSINESS_MULTIPLIER = 2.5;
-const AISLE_AFTER = 'C'; // Aisle between C and D
 
 export type SelectedSeat = {
   label: string; // e.g. "3A"
@@ -47,30 +44,27 @@ export default function SeatMap({
   const isSelected = (label: string) =>
     selectedSeats.some((s) => s.label === label);
 
-  const handleSeatClick = useCallback(
-    (row: number, col: string) => {
-      const label = `${row}${col}`;
-      if (occupiedSet.has(label)) return;
+  const handleSeatClick = (row: number, col: string) => {
+    const label = `${row}${col}`;
+    if (occupiedSet.has(label)) return;
 
-      const alreadySelected = selectedSeats.find((s) => s.label === label);
-      if (alreadySelected) {
-        onSelectionChange(selectedSeats.filter((s) => s.label !== label));
-      } else {
-        if (selectedSeats.length >= maxSeats) return;
-        onSelectionChange([
-          ...selectedSeats,
-          {
-            label,
-            row,
-            col,
-            price: getSeatPrice(row),
-            class: getSeatClass(row),
-          },
-        ]);
-      }
-    },
-    [selectedSeats, occupiedSet, maxSeats, onSelectionChange]
-  );
+    const alreadySelected = selectedSeats.find((s) => s.label === label);
+    if (alreadySelected) {
+      onSelectionChange(selectedSeats.filter((s) => s.label !== label));
+    } else {
+      if (selectedSeats.length >= maxSeats) return;
+      onSelectionChange([
+        ...selectedSeats,
+        {
+          label,
+          row,
+          col,
+          price: getSeatPrice(row),
+          class: getSeatClass(row),
+        },
+      ]);
+    }
+  };
 
   const totalPrice = selectedSeats.reduce((sum, s) => sum + s.price, 0);
 
@@ -107,7 +101,7 @@ export default function SeatMap({
       </div>
 
       {/* ─── Aircraft Body ─── */}
-      <div className="mx-auto max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-inner"
+      <div className="mx-auto max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-4 shadow-inner"
            style={{ maxHeight: '420px' }}>
         {/* Column headers */}
         <div className="mb-2 flex items-center justify-center gap-0.5">

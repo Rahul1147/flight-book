@@ -1,12 +1,37 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import FlightHeroSearch from '@/components/FlightHeroSearch';
 import FlightResults from '@/components/FlightResults';
+import { prisma } from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
 
-const prisma = new PrismaClient();
+const getFlightSearchMeta = unstable_cache(
+  async () =>
+    prisma.$transaction([
+      prisma.airport.findMany({
+        orderBy: [{ city: 'asc' }, { name: 'asc' }],
+        select: {
+          id: true,
+          iata: true,
+          city: true,
+          name: true,
+          country: true,
+        },
+      }),
+      prisma.airline.findMany({
+        orderBy: [{ name: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+      }),
+    ]),
+  ['flight-search-meta'],
+  { revalidate: 300 },
+);
 
 type FlightsPageProps = {
   searchParams: Promise<{
@@ -94,26 +119,6 @@ export default async function FlightsPage({ searchParams }: FlightsPageProps) {
   const dateRange = date ? parseDateRange(date) : null;
   const { minPrice, maxPrice } = parsePriceBounds(params);
 
-  const airports = await prisma.airport.findMany({
-    orderBy: [{ city: 'asc' }, { name: 'asc' }],
-    select: {
-      id: true,
-      iata: true,
-      city: true,
-      name: true,
-      country: true,
-    },
-  });
-
-  const airlines = await prisma.airline.findMany({
-    orderBy: [{ name: 'asc' }],
-    select: {
-      id: true,
-      name: true,
-      code: true,
-    },
-  });
-
   const where: Prisma.FlightWhereInput = {};
 
   if (sourceAirportId) where.originId = sourceAirportId;
@@ -140,21 +145,26 @@ export default async function FlightsPage({ searchParams }: FlightsPageProps) {
       maxPrice !== undefined,
   );
 
-  const flights = await prisma.flight.findMany({
-    where,
-    include: {
-      origin: true,
-      destination: true,
-      airline: true,
-      airplane: true,
-    },
-    orderBy: [{ departureTime: 'asc' }],
-    take: 100,
-  });
+  const [searchMeta, flights] = await Promise.all([
+    getFlightSearchMeta(),
+    prisma.flight.findMany({
+      where,
+      include: {
+        origin: true,
+        destination: true,
+        airline: true,
+        airplane: true,
+      },
+      orderBy: [{ departureTime: 'asc' }],
+      take: 100,
+    }),
+  ]);
+
+  const [airports, airlines] = searchMeta;
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="min-h-[calc(100dvh-9rem)] text-slate-900">
+      <div className="mx-auto max-w-7xl space-y-6">
         <FlightHeroSearch
           airports={airports}
           airlines={airlines}
@@ -169,7 +179,9 @@ export default async function FlightsPage({ searchParams }: FlightsPageProps) {
         />
 
         {date && !dateRange && (
-          <p className="mt-3 text-sm text-rose-700">Date must be a valid YYYY-MM-DD value.</p>
+          <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            Date must be a valid YYYY-MM-DD value.
+          </p>
         )}
 
         <FlightResults flights={flights} hasFilters={hasFilters} />

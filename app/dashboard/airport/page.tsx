@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
-import { PrismaClient, FlightStatus } from '@prisma/client';
+import { FlightStatus } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import {
   Table,
@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/table';
 import { format } from 'date-fns';
 import FlightStatusSelect from '@/components/FlightStatusSelect';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 async function updateFlightStatus(flightId: string, status: FlightStatus) {
   'use server';
@@ -43,9 +42,9 @@ export default async function AirportManagerDashboard() {
 
   if (!user?.managedAirportId) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold">Airport Manager Dashboard</h1>
-        <p className="text-red-500 mt-4">
+      <div className="rounded-3xl border border-rose-200 bg-rose-50 p-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Airport Manager Dashboard</h1>
+        <p className="mt-3 text-red-700">
           Your account is not associated with any airport. Please contact an
           administrator.
         </p>
@@ -53,29 +52,34 @@ export default async function AirportManagerDashboard() {
     );
   }
 
-  const airport = await prisma.airport.findUnique({
-    where: { id: user.managedAirportId },
-  });
-
-  const flights = await prisma.flight.findMany({
-    where: { originId: user.managedAirportId },
-    include: {
-      destination: true,
-    },
-    orderBy: {
-      departureTime: 'asc',
-    },
-  });
+  const [airport, flights] = await Promise.all([
+    prisma.airport.findUnique({
+      where: { id: user.managedAirportId },
+      select: { id: true, name: true, iata: true },
+    }),
+    prisma.flight.findMany({
+      where: { originId: user.managedAirportId },
+      include: {
+        destination: {
+          select: { city: true, iata: true },
+        },
+      },
+      orderBy: {
+        departureTime: 'asc',
+      },
+    }),
+  ]);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Airport Manager Dashboard</h1>
-        <p className="text-lg text-gray-600">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Airport Operations</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Airport Manager Dashboard</h1>
+        <p className="mt-2 text-base text-gray-600">
           Departures Board for {airport?.name} ({airport?.iata})
         </p>
       </div>
-      <div className="border rounded-lg">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -105,7 +109,11 @@ export default async function AirportManagerDashboard() {
           </TableBody>
         </Table>
       </div>
-       {flights.length === 0 && <p>No departures found for this airport.</p>}
+      {flights.length === 0 && (
+        <p className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm text-slate-600">
+          No departures found for this airport.
+        </p>
+      )}
     </div>
   );
 }

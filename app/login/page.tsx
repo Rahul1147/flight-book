@@ -16,31 +16,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg">
-        
-        {/* Header */}
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Welcome to Flight-booker
+    <div className="grid min-h-[calc(100dvh-9rem)] place-items-center py-8">
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-10">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-sky-100 blur-2xl" />
+
+        <div className="relative text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+            Secure Access
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
+            Welcome Back
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to start automating your outreach
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Continue with Google to access your flight dashboard and bookings.
           </p>
         </div>
 
-        {/* Action Button */}
-        <div className="mt-8 space-y-6">
+        <div className="mt-8 space-y-4">
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="flex w-full items-center justify-center rounded-md border border-transparent bg-black px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex h-12 w-full items-center justify-center rounded-xl border border-transparent bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
               <span className="animate-pulse">Connecting...</span>
             ) : (
               <div className="flex items-center gap-2">
-                {/* Google Icon SVG */}
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -63,8 +64,11 @@ export default function LoginPage() {
               </div>
             )}
           </button>
+
+          <p className="text-center text-xs leading-5 text-slate-500">
+            By continuing, you agree to secure authentication and role-based access policies.
+          </p>
         </div>
-        
       </div>
     </div>
   );

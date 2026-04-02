@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { getSessionAndRole } from '@/lib/route-auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 type PassengerInput = {
   name: string;

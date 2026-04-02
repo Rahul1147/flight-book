@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import type { UserRole } from '@prisma/client';
 import { Button } from './ui/button';
 import {
@@ -27,12 +27,6 @@ export default function UserRoleMenu({ userId, airports, onRoleChange }: UserRol
   const [isPending, startTransition] = useTransition();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [selectedAirportId, setSelectedAirportId] = useState(airports[0]?.id ?? '');
-
-  useEffect(() => {
-    if (!selectedAirportId && airports[0]?.id) {
-      setSelectedAirportId(airports[0].id);
-    }
-  }, [airports, selectedAirportId]);
 
   const handleRoleChange = (role: UserRole, managedAirportId?: string) => {
     startTransition(() => {

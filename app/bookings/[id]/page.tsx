@@ -1,10 +1,8 @@
 import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import BookingClient from '@/components/BookingClient';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 type BookingDetailsPageProps = {
   params: Promise<{ id: string }>;
@@ -32,25 +30,27 @@ export default async function BookingDetailsPage({ params }: BookingDetailsPageP
   // ── Load flight data ───────────────────────────────────
   const { id } = await params;
 
-  const flight = await prisma.flight.findUnique({
-    where: { id },
-    include: {
-      origin: true,
-      destination: true,
-      airline: true,
-      airplane: true,
-    },
-  });
+  const [flight, bookedSeats] = await Promise.all([
+    prisma.flight.findUnique({
+      where: { id },
+      include: {
+        origin: true,
+        destination: true,
+        airline: true,
+        airplane: true,
+      },
+    }),
+    prisma.bookedSeat.findMany({
+      where: { flightId: id },
+      select: { seatLabel: true },
+    }),
+  ]);
 
   if (!flight) {
     notFound();
   }
 
   // ── Load occupied seats for this flight ────────────────
-  const bookedSeats = await prisma.bookedSeat.findMany({
-    where: { flightId: id },
-    select: { seatLabel: true },
-  });
   const occupiedSeats = bookedSeats.map((s) => s.seatLabel);
 
   // ── Serialize flight info for client component ─────────
@@ -70,7 +70,7 @@ export default async function BookingDetailsPage({ params }: BookingDetailsPageP
   };
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main>
       <BookingClient flight={flightInfo} occupiedSeats={occupiedSeats} />
     </main>
   );

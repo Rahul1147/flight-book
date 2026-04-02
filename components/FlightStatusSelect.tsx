@@ -31,7 +31,7 @@ export default function FlightStatusSelect({
 
   return (
     <Select defaultValue={value} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="h-10 w-[170px] rounded-xl border-slate-300 bg-white text-xs font-semibold tracking-wide text-slate-700 sm:w-[190px]">
         <SelectValue placeholder="Set Status" />
       </SelectTrigger>
       <SelectContent>

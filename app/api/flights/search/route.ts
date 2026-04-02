@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 const buildDateRange = (dateParam: string) => {
   const match = dateParam.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -98,6 +96,7 @@ export async function GET(request: Request) {
       airplane: true,
     },
     orderBy: [{ departureTime: 'asc' }],
+    take: 100,
   });
 
   return NextResponse.json(flights);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SeatMap, { type SelectedSeat } from './SeatMap';
 import PassengerForm, { type PassengerData } from './PassengerForm';
@@ -35,15 +35,15 @@ export default function BookingClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Keep passengers in sync with selected seats
-  useEffect(() => {
+  const handleSelectionChange = (nextSeats: SelectedSeat[]) => {
+    setSelectedSeats(nextSeats);
     setPassengers((prev) => {
-      return selectedSeats.map((seat) => {
+      return nextSeats.map((seat) => {
         const existing = prev.find((p) => p.seatLabel === seat.label);
         return existing || { seatLabel: seat.label, name: '', passportId: '', age: '' };
       });
     });
-  }, [selectedSeats]);
+  };
 
   const totalPrice = selectedSeats.reduce((sum, s) => sum + s.price, 0);
 
@@ -106,12 +106,12 @@ export default function BookingClient({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* ─── Flight Summary Banner ─── */}
-      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="mx-auto max-w-6xl space-y-8 px-2 py-2 sm:px-3">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Booking Flow</p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
               Book Your Seats
             </h1>
             <p className="mt-1 text-sm text-slate-500">
@@ -120,9 +120,9 @@ export default function BookingClient({
           </div>
           <button
             onClick={() => router.back()}
-            className="text-sm font-medium text-sky-600 hover:text-sky-800 transition-colors"
+            className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
           >
-            ← Back to Search
+            Back to Search
           </button>
         </div>
 
@@ -156,22 +156,19 @@ export default function BookingClient({
         </div>
       </div>
 
-      {/* ─── Main Grid: Seat Map + Passenger Form ─── */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Left: Seat Map */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-bold text-slate-800">
-            ✈️ Select Your Seats
+            Select Your Seats
           </h2>
           <SeatMap
             basePrice={flight.basePrice}
             occupiedSeats={occupiedSeats}
             selectedSeats={selectedSeats}
-            onSelectionChange={setSelectedSeats}
+            onSelectionChange={handleSelectionChange}
           />
         </div>
 
-        {/* Right: Passenger Form + Actions */}
         <div className="space-y-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <PassengerForm
@@ -181,16 +178,14 @@ export default function BookingClient({
             />
           </div>
 
-          {/* Error display */}
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              <span className="font-semibold">⚠ Error:</span> {error}
+              <span className="font-semibold">Error:</span> {error}
             </div>
           )}
 
-          {/* Price summary + CTA */}
           {selectedSeats.length > 0 && (
-            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-lg">
+            <div className="rounded-2xl border border-slate-200 bg-linear-to-br from-slate-900 to-slate-800 p-6 text-white shadow-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-400">Total Price</p>

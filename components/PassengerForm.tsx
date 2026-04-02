@@ -32,7 +32,7 @@ export default function PassengerForm({
 
   if (selectedSeats.length === 0) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center text-sm text-amber-700">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-5 text-center text-sm text-amber-700">
         <span className="text-lg">💺</span>
         <p className="mt-1 font-medium">Select seats from the map above to add passengers</p>
       </div>
@@ -40,8 +40,8 @@ export default function PassengerForm({
   }
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-bold text-slate-800">
+    <div className="space-y-5">
+      <h3 className="text-xl font-semibold tracking-tight text-slate-800">
         Passenger Details{' '}
         <span className="text-sm font-normal text-slate-500">
           ({selectedSeats.length} passenger{selectedSeats.length !== 1 ? 's' : ''})
@@ -58,9 +58,8 @@ export default function PassengerForm({
         return (
           <div
             key={seat.label}
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md sm:p-5"
           >
-            {/* Seat badge */}
             <div className="mb-3 flex items-center gap-2">
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
@@ -77,7 +76,6 @@ export default function PassengerForm({
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {/* Full Name */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-600">
                   Full Name <span className="text-red-400">*</span>
@@ -87,11 +85,10 @@ export default function PassengerForm({
                   value={p.name}
                   placeholder="John Doe"
                   onChange={(e) => updateField(idx, 'name', e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 transition-colors"
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm text-slate-800 placeholder:text-slate-400 transition-colors focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   required
                 />
               </div>
-              {/* Passport / ID */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-600">
                   Passport / ID <span className="text-red-400">*</span>
@@ -103,11 +100,10 @@ export default function PassengerForm({
                   onChange={(e) =>
                     updateField(idx, 'passportId', e.target.value)
                   }
-                  className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 transition-colors"
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm text-slate-800 placeholder:text-slate-400 transition-colors focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   required
                 />
               </div>
-              {/* Age */}
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-600">
                   Age <span className="text-red-400">*</span>
@@ -119,7 +115,7 @@ export default function PassengerForm({
                   min={1}
                   max={120}
                   onChange={(e) => updateField(idx, 'age', e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 transition-colors"
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 text-sm text-slate-800 placeholder:text-slate-400 transition-colors focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   required
                 />
               </div>

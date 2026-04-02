@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,8 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import UserRoleMenu from '../../../components/UserRoleMenu';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 async function updateUserRole(userId: string, role: UserRole, managedAirportId?: string) {
   'use server';
@@ -62,8 +61,25 @@ export default async function AdminDashboardPage() {
       prisma.user.count(),
       prisma.booking.count(),
       prisma.flight.count({ where: { status: { not: 'CANCELLED' } } }),
-      prisma.user.findMany({ orderBy: { createdAt: 'desc' } }),
-      prisma.airport.findMany({ orderBy: { iata: 'asc' } }),
+      prisma.user.findMany({
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      }),
+      prisma.airport.findMany({
+        orderBy: { iata: 'asc' },
+        select: {
+          id: true,
+          iata: true,
+          name: true,
+          city: true,
+        },
+      }),
       prisma.booking.groupBy({
         by: ['flightId'],
         _count: { flightId: true },
@@ -72,6 +88,11 @@ export default async function AdminDashboardPage() {
         take: 5,
       }),
       prisma.booking.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth() - 5, 1),
+          },
+        },
         select: {
           createdAt: true,
           totalPrice: true,
@@ -101,9 +122,10 @@ export default async function AdminDashboardPage() {
 
   const routeDetails = await prisma.flight.findMany({
     where: { id: { in: busiestRoutes.map((route) => route.flightId) } },
-    include: {
-      origin: true,
-      destination: true,
+    select: {
+      id: true,
+      origin: { select: { iata: true } },
+      destination: { select: { iata: true } },
     },
   });
 
@@ -114,15 +136,16 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Global Admin Dashboard</h1>
-        <p className="text-muted-foreground">
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Operations</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Global Admin Dashboard</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Overview of revenue, users, bookings, and route activity.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="rounded-2xl border-slate-200 shadow-sm">
           <CardHeader>
             <CardTitle>Total Revenue</CardTitle>
           </CardHeader>
@@ -132,7 +155,7 @@ export default async function AdminDashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border-slate-200 shadow-sm">
           <CardHeader>
             <CardTitle>Total Users</CardTitle>
           </CardHeader>
@@ -140,7 +163,7 @@ export default async function AdminDashboardPage() {
             <p className="text-2xl font-bold">{totalUsers}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border-slate-200 shadow-sm">
           <CardHeader>
             <CardTitle>Active Flights</CardTitle>
           </CardHeader>
@@ -148,7 +171,7 @@ export default async function AdminDashboardPage() {
             <p className="text-2xl font-bold">{activeFlights}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl border-slate-200 shadow-sm">
           <CardHeader>
             <CardTitle>Total Bookings</CardTitle>
           </CardHeader>
@@ -159,7 +182,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="rounded-2xl border-slate-200 shadow-sm lg:col-span-2">
           <CardHeader>
             <CardTitle>User Management</CardTitle>
           </CardHeader>
@@ -203,12 +226,12 @@ export default async function AdminDashboardPage() {
         </Card>
 
         <div className="space-y-8">
-          <Card>
+          <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle>Revenue over Time</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex h-60 items-end gap-3 rounded-md bg-muted px-4 pb-4 pt-6">
+              <div className="flex h-60 items-end gap-3 rounded-xl bg-muted px-4 pb-4 pt-6">
                 {chartBuckets.map((bucket) => {
                   const height = Math.max((bucket.revenue / chartMax) * 100, 8);
 
@@ -232,7 +255,7 @@ export default async function AdminDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-2xl border-slate-200 shadow-sm">
             <CardHeader>
               <CardTitle>Busiest Routes</CardTitle>
             </CardHeader>
