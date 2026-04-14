@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum UserRole {
@@ -162,6 +163,13 @@ enum BookingStatus {
   CANCELLED
 }
 
+enum RefundStatus {
+  NOT_REQUESTED
+  PENDING
+  PROCESSED
+  REJECTED
+}
+
 model Booking {
   id          String        @id @default(cuid())
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -169,6 +177,9 @@ model Booking {
   flight      Flight        @relation(fields: [flightId], references: [id], onDelete: Cascade)
   flightId    String
   status      BookingStatus @default(PENDING)
+  refundStatus RefundStatus @default(NOT_REQUESTED)
+  refundRequestedAt DateTime?
+  refundProcessedAt DateTime?
   totalPrice  Float
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now()) @updatedAt

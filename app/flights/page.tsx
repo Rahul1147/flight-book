@@ -4,6 +4,7 @@ import type { Prisma } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import FlightHeroSearch from '@/components/FlightHeroSearch';
 import FlightResults from '@/components/FlightResults';
+import FlightChatAssistant from '@/components/FlightChatAssistant';
 import { prisma } from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
 
@@ -183,6 +184,8 @@ export default async function FlightsPage({ searchParams }: FlightsPageProps) {
             Date must be a valid YYYY-MM-DD value.
           </p>
         )}
+
+        <FlightChatAssistant />
 
         <FlightResults flights={flights} hasFilters={hasFilters} />
       </div>
